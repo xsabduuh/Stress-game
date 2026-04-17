@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>وردة رومانسية • لكِ 🌹</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>🌹 Bloom for you · romantic rose</title>
   <style>
+    /* ----- global reset & romantic background ----- */
     * {
       margin: 0;
       padding: 0;
@@ -13,48 +14,32 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(145deg, #2b0b1f 0%, #5e2a46 40%, #a14d72 100%);
+      background: radial-gradient(circle at 20% 30%, #2d1b3a, #0f0c1b);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+      font-family: 'Segoe UI', 'Quicksand', system-ui, sans-serif;
       padding: 16px;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* تأثير نجوم/لمعان خلفي خفيف */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at 20% 30%, rgba(255, 220, 240, 0.15) 0%, transparent 40%),
-                  radial-gradient(circle at 80% 70%, rgba(255, 200, 220, 0.1) 0%, transparent 45%);
-      pointer-events: none;
-      z-index: 0;
     }
 
     .card {
-      position: relative;
-      z-index: 5;
-      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 680px;
       width: 100%;
-      background: rgba(25, 8, 20, 0.3);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 56px 56px 48px 48px;
-      padding: 24px 20px 30px;
-      box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 180, 200, 0.2) inset;
-      border: 1px solid rgba(255, 200, 220, 0.15);
-      transition: box-shadow 0.3s;
     }
 
+    /* canvas: soft glow container, responsive */
     .canvas-wrapper {
       position: relative;
       width: 100%;
+      border-radius: 48px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 140, 200, 0.3);
+      background: transparent;
       display: flex;
       justify-content: center;
-      margin-bottom: 12px;
     }
 
     canvas {
@@ -62,638 +47,554 @@
       width: 100%;
       height: auto;
       border-radius: 36px;
-      background: rgba(15, 5, 12, 0.25);
-      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 210, 230, 0.1) inset;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      transition: all 0.2s;
+      background: transparent; /* background drawn in canvas */
+      cursor: default;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .message-container {
-      text-align: center;
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 12px;
-    }
-
-    .rose-message {
-      font-size: 1.7rem;
+    /* romantic message — hidden until bloom finishes */
+    .love-message {
+      margin-top: 24px;
+      font-size: clamp(1.8rem, 8vw, 2.6rem);
       font-weight: 500;
-      color: #ffecf0;
-      text-shadow: 0 4px 12px #b3476b, 0 0 8px #ffb6c180;
       letter-spacing: 2px;
-      word-break: keep-all;
+      text-align: center;
+      color: #ffe4f2;
+      text-shadow: 0 0 12px #ff99cc, 0 0 25px #b57edc;
       opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 1.2s ease, transform 0.8s cubic-bezier(0.2, 0.9, 0.3, 1);
-      background: linear-gradient(135deg, #ffe4ec, #ffd9e5);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-weight: bold;
-      line-height: 1.4;
+      transform: translateY(10px);
+      transition: opacity 1.2s ease, transform 1s ease;
+      pointer-events: none;
+      backdrop-filter: blur(2px);
+      padding: 0 8px;
     }
 
-    .rose-message.show {
+    .love-message.show {
       opacity: 1;
       transform: translateY(0);
     }
 
-    /* حاوية القلوب الطافية */
-    .hearts-layer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 20;
-      overflow: hidden;
-    }
-
-    .floating-heart {
-      position: absolute;
-      color: #ff9ebb;
-      font-size: 24px;
-      opacity: 0;
-      animation: floatUpHeart 5s ease-out forwards;
-      filter: drop-shadow(0 0 6px #ffb6d9);
-      user-select: none;
-      pointer-events: none;
-      z-index: 25;
-    }
-
-    @keyframes floatUpHeart {
-      0% {
-        opacity: 0;
-        transform: translateY(0) scale(0.5) rotate(0deg);
-      }
-      15% {
-        opacity: 0.9;
-      }
-      80% {
-        opacity: 0.7;
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-280px) scale(1.3) rotate(15deg);
-      }
-    }
-
-    /* توقيع صغير */
+    /* tiny footer / sparkle hint — just for atmosphere */
     .hint {
-      text-align: center;
-      margin-top: 6px;
-      color: #f0cdda;
-      opacity: 0.65;
+      margin-top: 8px;
+      color: #b8a2d4;
       font-size: 0.8rem;
-      letter-spacing: 2px;
+      opacity: 0.7;
     }
 
-    /* زر إعادة خفي للرومانسية (اختياري) — فقط للنعومة */
-    .replay-touch {
-      display: inline-block;
-      margin-top: 6px;
-      color: #ffdae6;
-      background: none;
-      border: none;
-      font-size: 0.9rem;
-      opacity: 0.5;
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 40px;
-      backdrop-filter: blur(5px);
-      transition: opacity 0.2s;
-    }
-    .replay-touch:hover {
-      opacity: 0.9;
-      background: rgba(255, 200, 220, 0.1);
-    }
+    /* no external libs — pure love */
   </style>
 </head>
 <body>
-  <!-- طبقة القلوب الطائرة -->
-  <div class="hearts-layer" id="heartsLayer"></div>
-
-  <div class="card">
-    <div class="canvas-wrapper">
-      <canvas id="roseCanvas"></canvas>
-    </div>
-    <div class="message-container">
-      <div class="rose-message" id="loveMessage">هذه الوردة لكِ ❤️</div>
-    </div>
-    <div class="hint">✨ تنمو من القلب ✨</div>
-    <!-- خيار لمسي لإعادة المشهد (اختياري لكن لطيف) -->
-    <div style="text-align: center;">
-      <button class="replay-touch" id="replayBtn" aria-label="شاهد النمو مجدداً">⟳ أعد الإزهار</button>
-    </div>
+<div class="card">
+  <div class="canvas-wrapper">
+    <canvas id="romanticCanvas" width="600" height="800"></canvas>
   </div>
+  <div id="messageBox" class="love-message">This rose is for you ❤️</div>
+  <div class="hint">✨ softly glowing · made with code ✨</div>
+</div>
 
-  <script>
-    (function(){
-      "use strict";
+<script>
+  (function(){
+    "use strict";
 
-      // ---------- العناصر ----------
-      const canvas = document.getElementById('roseCanvas');
-      const ctx = canvas.getContext('2d');
-      const messageEl = document.getElementById('loveMessage');
-      const heartsLayer = document.getElementById('heartsLayer');
+    // ----- CANVAS & CONTEXT -----
+    const canvas = document.getElementById('romanticCanvas');
+    const ctx = canvas.getContext('2d');
+    const messageEl = document.getElementById('messageBox');
+    
+    // fixed logical resolution (600x800) — looks crisp and fits mobile
+    const CW = 600;            // width
+    const CH = 800;            // height
+    canvas.width = CW;
+    canvas.height = CH;
 
-      // ---------- متغيرات التحكم ----------
-      let animationProgress = 0;           // 0 .. 1
-      let animFrame = null;
-      let animStartTime = null;
-      const ANIMATION_DURATION = 4800;     // 4.8 ثانية (بين 3-6)
-      let isAnimating = false;
-      let animationCompleted = false;
+    // ----- ANIMATION TIMELINE (3–6 sec total, we pick ~5.2s) -----
+    const ANIM_DURATION = 5200;        // milliseconds (5.2s)
+    let animStart = null;
+    let animFrame = null;
+    let bloomCompleted = false;         // to show message once
 
-      // أبعاد canvas الفعلية (تحدد عند تغيير الحجم)
-      let canvasWidth = 400;
-      let canvasHeight = 500;
+    // ----- GROWTH PARAMETERS (stem, leaves, bloom) -----
+    const potY = 700;                  // where the pot sits (bottom area)
+    const stemBaseX = 300;             // center X
+    const stemBaseY = potY - 8;        // stem starts inside pot
+    const flowerCenterY = 340;         // where rose blooms (after full growth)
+    const maxStemLength = stemBaseY - flowerCenterY; // ≈ 352px
 
-      // للتحكم بتوليد القلوب
-      let heartInterval = null;
-      let heartsGenerated = false;
+    // leaf positions (relative to stem progress)
+    const leaves = [
+      { stemPos: 0.45, size: 1.0, angleOffset: -0.4, delayFactor: 0.0 },  // left leaf
+      { stemPos: 0.65, size: 0.9, angleOffset: 0.5, delayFactor: 0.15 }, // right leaf
+      { stemPos: 0.80, size: 0.8, angleOffset: -0.2, delayFactor: 0.3 }  // upper left
+    ];
 
-      // ---------- ضبط حجم canvas (متجاوب) ----------
-      function resizeCanvas() {
-        const container = canvas.parentElement;
-        const containerWidth = container.clientWidth;
-        // نسبة عرض إلى ارتفاع 4:5 (منظر عمودي جميل)
-        const aspectRatio = 5 / 4;  // height = width * 1.25
-        let newWidth = Math.min(containerWidth, 480); // حد أقصى للعرض 480px
-        let newHeight = newWidth * aspectRatio;
+    // ----- PARTICLE SYSTEMS (hearts + sparkles) -----
+    let particles = [];
+    const MAX_PARTICLES = 48;
+    const HEART_COLORS = ['#ffb3d9', '#ff99cc', '#ffcce0', '#f8b0d4', '#ffa6c9'];
+    const SPARKLE_COLORS = ['#fff9e6', '#ffe6f0', '#ffffff', '#fce4ec'];
 
-        // لا نريد أن يتجاوز ارتفاع الشاشة كثيراً
-        const maxHeight = window.innerHeight * 0.6;
-        if (newHeight > maxHeight) {
-          newHeight = maxHeight;
-          newWidth = newHeight / aspectRatio;
+    // ----- helper: heart shape (scaled) -----
+    function drawHeart(ctx, x, y, size, color, opacity = 1) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(size, size);
+      ctx.beginPath();
+      ctx.moveTo(0, 0.3);
+      ctx.bezierCurveTo(-0.2, -0.1, -0.9, -0.2, -0.9, 0.5);
+      ctx.bezierCurveTo(-0.9, 1.0, -0.4, 1.2, 0, 1.6);
+      ctx.bezierCurveTo(0.4, 1.2, 0.9, 1.0, 0.9, 0.5);
+      ctx.bezierCurveTo(0.9, -0.2, 0.2, -0.1, 0, 0.3);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.globalAlpha = opacity;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // ----- particle factory -----
+    function spawnHeart() {
+      if (particles.length > MAX_PARTICLES) return;
+      const baseX = stemBaseX + (Math.random() - 0.5) * 180;
+      const baseY = flowerCenterY - 20 + Math.random() * 120;
+      particles.push({
+        type: 'heart',
+        x: baseX,
+        y: baseY,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: -0.6 - Math.random() * 0.7,
+        size: 0.5 + Math.random() * 0.9,
+        color: HEART_COLORS[Math.floor(Math.random() * HEART_COLORS.length)],
+        opacity: 0.8 + Math.random() * 0.3,
+        life: 1.0,
+        fade: 0.005 + Math.random() * 0.01,
+        rotation: 0
+      });
+    }
+
+    function spawnSparkle() {
+      if (particles.length > MAX_PARTICLES) return;
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 35 + Math.random() * 90;
+      const centerX = stemBaseX;
+      const centerY = flowerCenterY - 10;
+      particles.push({
+        type: 'sparkle',
+        x: centerX + Math.cos(angle) * radius,
+        y: centerY + Math.sin(angle) * radius * 0.8,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: -0.1 - Math.random() * 0.5,
+        size: 2 + Math.random() * 6,
+        color: SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)],
+        opacity: 0.9,
+        life: 0.8 + Math.random() * 0.5,
+        fade: 0.008,
+        twinkle: Math.random() * 0.1
+      });
+    }
+
+    // ----- update particles (hearts rise, sparkles twinkle) -----
+    function updateParticles() {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        
+        if (p.type === 'heart') {
+          p.vy += 0.008; // slight floatiness
+          p.life -= p.fade;
+        } else {
+          // sparkle: slow fade and random twinkle
+          p.life -= p.fade;
+          p.opacity = 0.6 + 0.4 * Math.sin(Date.now() * 0.01 + i);
         }
-
-        canvasWidth = Math.floor(newWidth);
-        canvasHeight = Math.floor(newHeight);
-
-        canvas.width = canvasWidth;
-        canvas.height = canvasHeight;
-
-        // إعادة رسم المشهد حسب التقدم الحالي
-        drawFullScene(animationProgress);
+        
+        // remove if faded or off-canvas (with margin)
+        if (p.life <= 0.02 || p.y < -50 || p.x < -50 || p.x > CW + 50) {
+          particles.splice(i, 1);
+          continue;
+        }
+        
+        // tiny boundary bounce for sparkles (optional)
+        if (p.type === 'sparkle' && (p.x < 10 || p.x > CW - 10)) {
+          p.vx *= -0.3;
+        }
       }
 
-      // ---------- رسم المشهد بالكامل (حسب التقدم) ----------
-      function drawFullScene(progress) {
-        if (!canvasWidth || !canvasHeight) return;
-        
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-        
-        // رسم تأثير خلفية شفافة داخلية بسيطة (إطار ناعم)
-        const gradient = ctx.createRadialGradient(
-          canvasWidth/2, canvasHeight/2, 5,
-          canvasWidth/2, canvasHeight/2, canvasWidth*0.7
-        );
-        gradient.addColorStop(0, 'rgba(70, 20, 40, 0.2)');
-        gradient.addColorStop(1, 'rgba(20, 5, 15, 0.1)');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+      // continuously generate hearts and sparkles (romantic atmosphere)
+      if (Math.random() < 0.3) spawnHeart();
+      if (Math.random() < 0.4) spawnSparkle();
+    }
 
-        // رسم الوعاء / الأرضية (يكون ظاهراً دائماً)
-        drawPot(ctx, canvasWidth, canvasHeight);
-        
-        // إذا لم يبدأ النمو بعد (progress = 0) لا نرسم شيئاً آخر
-        if (progress <= 0) return;
-
-        // إحداثيات مهمة (نسب مئوية)
-        const potTopY = canvasHeight * 0.80;      // أعلى الوعاء
-        const roseCenterX = canvasWidth / 2;
-        const roseCenterY = canvasHeight * 0.38;   // مركز الوردة
-
-        // 1. رسم الساق (ينمو حسب التقدم)
-        drawStem(ctx, progress, roseCenterX, potTopY, roseCenterY, canvasWidth, canvasHeight);
-
-        // 2. رسم الأوراق (تظهر بعد 30% من النمو)
-        if (progress >= 0.28) {
-          const leafProgress = Math.min(1, (progress - 0.28) / 0.25); // تظهر تدريجياً
-          drawLeaves(ctx, leafProgress, roseCenterX, potTopY, roseCenterY, canvasWidth);
+    // ----- draw particles (hearts & sparkles) -----
+    function drawParticles() {
+      for (let p of particles) {
+        ctx.save();
+        if (p.type === 'heart') {
+          drawHeart(ctx, p.x, p.y, p.size * 0.7, p.color, p.opacity * p.life);
+        } else { // sparkle
+          ctx.globalAlpha = p.opacity * p.life;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.shadowColor = '#fff9e6';
+          ctx.shadowBlur = 12;
+          ctx.fill();
+          // extra tiny sparkle cross
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(p.x-1, p.y-1, p.size*0.2, 0, Math.PI*2);
+          ctx.fillStyle = '#fff';
+          ctx.fill();
         }
-
-        // 3. رسم الوردة (تبدأ بالتفتح من 48% إلى 100%)
-        if (progress >= 0.48) {
-          const bloomProgress = Math.min(1, (progress - 0.48) / 0.52); // 0..1 للتفتح
-          drawRose(ctx, bloomProgress, roseCenterX, roseCenterY, canvasWidth, canvasHeight);
-        }
-
-        // إضافة لمعان خفيف / نجوم صغيرة عشوائية (تأثير ساحر)
-        if (progress > 0.6) {
-          drawSparkles(ctx, progress, roseCenterX, roseCenterY, canvasWidth, canvasHeight);
-        }
+        ctx.restore();
       }
+      // reset shadow (important)
+      ctx.shadowBlur = 0;
+      ctx.shadowColor = 'transparent';
+    }
 
-      // ---------- رسم الوعاء (وعاء صغير أنيق) ----------
-      function drawPot(ctx, w, h) {
-        const potWidth = w * 0.36;
-        const potHeight = h * 0.14;
-        const potX = (w - potWidth) / 2;
-        const potY = h * 0.82;  // قاع الوعاء
+    // ----- DRAW FLOWER POT (ground / soil) -----
+    function drawPot() {
+      // pot body (warm terracotta)
+      ctx.save();
+      ctx.shadowColor = '#3d1e2e';
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetY = 3;
+      
+      // main pot shape
+      ctx.beginPath();
+      ctx.moveTo(230, potY);
+      ctx.lineTo(370, potY);
+      ctx.lineTo(350, potY + 45);
+      ctx.lineTo(250, potY + 45);
+      ctx.closePath();
+      const potGrad = ctx.createLinearGradient(260, potY, 340, potY+45);
+      potGrad.addColorStop(0, '#9f5e4b');
+      potGrad.addColorStop(1, '#6d3f32');
+      ctx.fillStyle = potGrad;
+      ctx.fill();
+      
+      // pot rim
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.ellipse(300, potY-2, 82, 18, 0, 0, Math.PI*2);
+      ctx.fillStyle = '#b5725e';
+      ctx.fill();
+      
+      // soil / ground inside
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.ellipse(300, potY-6, 68, 12, 0, 0, Math.PI*2);
+      ctx.fillStyle = '#4a2c23';
+      ctx.fill();
+      
+      // little highlights
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.ellipse(280, potY-10, 20, 5, 0, 0, Math.PI*2);
+      ctx.fillStyle = '#6d4c3d';
+      ctx.globalAlpha = 0.4;
+      ctx.fill();
+      
+      ctx.restore();
+    }
+
+    // ----- DRAW STEM (animated length) + LEAVES (one by one) -----
+    function drawStemAndLeaves(progress) {
+      // stem progress: 0→1 (but we want stem fully grown before leaves start, but we control via timeline)
+      const stemGrow = Math.min(progress / 0.35, 1.0);  // stem reaches full at ~35% of total anim
+      const currentStemY = stemBaseY - (maxStemLength * stemGrow);
+      
+      // draw stem (smooth curve)
+      ctx.save();
+      ctx.shadowColor = '#b8f0ae';
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.moveTo(stemBaseX, stemBaseY);
+      ctx.lineTo(stemBaseX, currentStemY);
+      ctx.lineWidth = 6 + 2 * Math.sin(progress * 8) * 0.3; // subtle organic
+      ctx.strokeStyle = '#3f7840';
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      
+      // second lighter highlight
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.moveTo(stemBaseX-1.5, stemBaseY);
+      ctx.lineTo(stemBaseX-1.5, currentStemY);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#6da86d';
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.restore();
+
+      // leaves appear gradually (one by one) based on leaf progress thresholds
+      const leafStartProgress = 0.28;  // when first leaf can start
+      const leafEndProgress = 0.55;    // all leaves fully visible by 55%
+      
+      leaves.forEach((leaf, index) => {
+        // each leaf appears with its own delay
+        const leafDelay = leaf.delayFactor;
+        let leafAlpha = 0;
+        if (progress > leafStartProgress) {
+          const leafRange = leafEndProgress - leafStartProgress;
+          const leafProgress = Math.min(Math.max((progress - leafStartProgress - leafDelay) / (leafRange * 0.5), 0), 1.0);
+          leafAlpha = Math.min(leafProgress * 1.5, 1.0);
+        }
+        if (leafAlpha <= 0.02) return;
         
-        // ظل خفيف تحت الوعاء
-        ctx.shadowColor = '#2d0e1e';
-        ctx.shadowBlur = 14;
-        ctx.shadowOffsetY = 4;
+        // position on stem (interpolate)
+        const stemYAtLeaf = stemBaseY - (maxStemLength * Math.min(leaf.stemPos, stemGrow));
+        const leafXOffset = (index % 2 === 0 ? -1 : 1) * (18 + leaf.size * 12);
         
-        // جسم الوعاء (شبه منحرف)
+        ctx.save();
+        ctx.translate(stemBaseX + leafXOffset * 0.7, stemYAtLeaf - 3);
+        ctx.rotate((leaf.angleOffset + (index * 0.2)) * (0.7 + 0.3 * leafAlpha));
+        ctx.globalAlpha = leafAlpha * 0.95;
+        ctx.shadowColor = '#3f7a3f';
+        ctx.shadowBlur = 10;
+        
+        // draw leaf (simple teardrop)
         ctx.beginPath();
-        ctx.moveTo(potX + potWidth * 0.2, potY);
-        ctx.lineTo(potX + potWidth * 0.8, potY);
-        ctx.lineTo(potX + potWidth * 0.95, potY + potHeight);
-        ctx.lineTo(potX + potWidth * 0.05, potY + potHeight);
-        ctx.closePath();
-        
-        const potGrad = ctx.createLinearGradient(potX, potY, potX + potWidth*0.3, potY + potHeight);
-        potGrad.addColorStop(0, '#9f6b7c');
-        potGrad.addColorStop(0.7, '#5d3345');
-        ctx.fillStyle = potGrad;
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(15 * leaf.size, -20 * leaf.size, 5 * leaf.size, -38 * leaf.size);
+        ctx.quadraticCurveTo(-8 * leaf.size, -24 * leaf.size, 0, 0);
+        const leafGrad = ctx.createLinearGradient(-5, -5, 12, -30);
+        leafGrad.addColorStop(0, '#51843d');
+        leafGrad.addColorStop(1, '#2c6b2c');
+        ctx.fillStyle = leafGrad;
         ctx.fill();
-        
-        // حافة الوعاء
-        ctx.shadowBlur = 8;
-        ctx.beginPath();
-        ctx.ellipse(potX + potWidth/2, potY, potWidth*0.45, potHeight*0.25, 0, 0, Math.PI*2);
-        ctx.fillStyle = '#b3808f';
-        ctx.fill();
-        ctx.strokeStyle = '#ecc0cf';
+        ctx.strokeStyle = '#235a23';
         ctx.lineWidth = 1.2;
         ctx.stroke();
         
-        // تراب / أرض داخل الوعاء
-        ctx.shadowBlur = 6;
+        // leaf vein
+        ctx.globalAlpha = leafAlpha * 0.6;
         ctx.beginPath();
-        ctx.ellipse(potX + potWidth/2, potY-1, potWidth*0.35, potHeight*0.14, 0, 0, Math.PI*2);
-        ctx.fillStyle = '#5d3f47';
-        ctx.fill();
-        
-        // إعادة ضبط الظل
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetY = 0;
-      }
-
-      // ---------- رسم الساق (ينمو تدريجياً) ----------
-      function drawStem(ctx, progress, startX, startY, endX, endY, w, h) {
-        // نمو الساق: من الأسفل للأعلى
-        const currentEndY = startY - (startY - endY) * Math.min(progress * 1.2, 1.0);
-        
-        // منحنى خفيف
-        const cp1x = startX - w * 0.02;
-        const cp1y = startY - (startY - endY) * 0.4;
-        const cp2x = endX + w * 0.03;
-        const cp2y = startY - (startY - endY) * 0.7;
-        
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, currentEndY);
-        
-        ctx.lineWidth = Math.max(5, w * 0.03);
-        ctx.strokeStyle = '#3b6b3b';
-        ctx.shadowColor = '#1f3a1f';
-        ctx.shadowBlur = 12;
-        ctx.shadowOffsetX = 1;
-        ctx.lineCap = 'round';
+        ctx.moveTo(0, 0);
+        ctx.lineTo(2, -22 * leaf.size);
+        ctx.strokeStyle = '#b3d9a0';
+        ctx.lineWidth = 1.0;
         ctx.stroke();
-        
-        // خط ثانوي لإضاءة خفيفة
-        ctx.beginPath();
-        ctx.moveTo(startX, startY);
-        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, endX, currentEndY);
-        ctx.lineWidth = Math.max(2, w*0.012);
-        ctx.strokeStyle = '#6f9e6f';
-        ctx.shadowBlur = 6;
-        ctx.stroke();
-        
-        ctx.shadowColor = 'transparent';
-      }
+        ctx.restore();
+      });
+    }
 
-      // ---------- رسم الأوراق (تظهر واحدة تلو الأخرى) ----------
-      function drawLeaves(ctx, leafProgress, stemX, stemBottomY, roseY, w) {
-        // ورقتان: اليسرى واليمنى
-        const leafY1 = stemBottomY - (stemBottomY - roseY) * 0.55;
-        const leafY2 = stemBottomY - (stemBottomY - roseY) * 0.75;
+    // ----- ROSE BLOOM (petals opening) based on bloom factor (0→1) -----
+    function drawRose(bloom) {
+      // bloom: 0 = bud, 1 = fully open
+      const centerX = stemBaseX;
+      const centerY = flowerCenterY;
+      
+      // soft glow around flower (intensifies with bloom)
+      ctx.save();
+      const glowRadius = 40 + 50 * bloom;
+      const gradient = ctx.createRadialGradient(centerX-5, centerY-8, 5, centerX, centerY, glowRadius);
+      gradient.addColorStop(0, '#ffd0e8');
+      gradient.addColorStop(0.5, '#f2a7c9');
+      gradient.addColorStop(1, 'transparent');
+      ctx.globalAlpha = 0.45 + 0.25 * bloom;
+      ctx.fillStyle = gradient;
+      ctx.shadowColor = '#ffb3d9';
+      ctx.shadowBlur = 35;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, glowRadius, 0, Math.PI*2);
+      ctx.fill();
+      
+      ctx.shadowBlur = 20;
+      ctx.globalAlpha = 0.9;
+      
+      // draw petals (layered, rotating & scaling with bloom)
+      const petalCount = 8;
+      const basePetalScale = 0.6 + bloom * 1.1;
+      const petalAngleOffset = bloom * 0.9;
+      
+      for (let i = 0; i < petalCount; i++) {
+        const angle = (i / petalCount) * Math.PI * 2 + petalAngleOffset;
+        const petalOpen = 0.4 + bloom * 1.3;  // spread factor
+        const dist = 7 + 22 * bloom;
+        const petalX = centerX + Math.cos(angle) * dist;
+        const petalY = centerY + Math.sin(angle) * dist * 0.8 - 2;
         
-        // ظهور تدريجي: الأولى ثم الثانية
-        const leftLeafAlpha = Math.min(1, leafProgress * 1.8);
-        const rightLeafAlpha = Math.min(1, Math.max(0, (leafProgress - 0.25) * 2.2));
+        ctx.save();
+        ctx.translate(petalX, petalY);
+        ctx.rotate(angle + 0.3);
+        ctx.scale(basePetalScale * (0.8 + 0.2 * Math.sin(i*1.5)), basePetalScale * 0.9);
         
-        ctx.shadowColor = '#1e3b1e';
-        ctx.shadowBlur = 10;
-        
-        // ورقة يسرى
-        if (leftLeafAlpha > 0.01) {
-          ctx.save();
-          ctx.translate(stemX - w*0.12, leafY1);
-          ctx.rotate(-0.4);
-          ctx.scale(1, 0.9);
-          ctx.beginPath();
-          ctx.ellipse(0, 0, w*0.12, w*0.05, 0, 0, Math.PI*2);
-          const grad = ctx.createLinearGradient(-w*0.06, -w*0.03, w*0.06, w*0.02);
-          grad.addColorStop(0, '#4f8a4f');
-          grad.addColorStop(1, '#2d5a2d');
-          ctx.fillStyle = grad;
-          ctx.globalAlpha = leftLeafAlpha;
-          ctx.fill();
-          ctx.strokeStyle = '#1d3a1d';
-          ctx.lineWidth = 1.2;
-          ctx.stroke();
-          ctx.restore();
-        }
-        
-        // ورقة يمنى
-        if (rightLeafAlpha > 0.01) {
-          ctx.save();
-          ctx.translate(stemX + w*0.12, leafY2);
-          ctx.rotate(0.45);
-          ctx.scale(1, 0.9);
-          ctx.beginPath();
-          ctx.ellipse(0, 0, w*0.13, w*0.055, 0, 0, Math.PI*2);
-          const grad = ctx.createLinearGradient(-w*0.05, -w*0.02, w*0.07, w*0.03);
-          grad.addColorStop(0, '#5f9e5f');
-          grad.addColorStop(1, '#2a522a');
-          ctx.fillStyle = grad;
-          ctx.globalAlpha = rightLeafAlpha;
-          ctx.fill();
-          ctx.strokeStyle = '#1d3a1d';
-          ctx.stroke();
-          ctx.restore();
-        }
-        
-        ctx.globalAlpha = 1.0;
-        ctx.shadowColor = 'transparent';
-      }
-
-      // ---------- رسم الوردة المتفتحة (رومانسية ناعمة) ----------
-      function drawRose(ctx, bloom, centerX, centerY, w, h) {
-        // كلما زاد bloom تتفتح البتلات أكثر (حجم وانتشار)
-        const baseSize = w * 0.18;
-        const petalCount = 7;
-        
-        ctx.shadowColor = '#b34e6b';
-        ctx.shadowBlur = 20;
-        
-        // رسم البتلات الخلفية أولاً
-        for (let i = 0; i < petalCount; i++) {
-          const angle = (i / petalCount) * Math.PI * 2 + bloom * 0.5;
-          const distance = baseSize * 0.45 * bloom;  // كلما تفتحت ابتعدت قليلاً
-          const offsetX = Math.cos(angle) * distance;
-          const offsetY = Math.sin(angle) * distance * 0.7;
-          
-          const petalWidth = baseSize * (0.55 + bloom * 0.35);
-          const petalHeight = baseSize * (0.8 + bloom * 0.4);
-          
-          ctx.save();
-          ctx.translate(centerX + offsetX, centerY + offsetY - 2);
-          ctx.rotate(angle + 0.2);
-          ctx.scale(1, 0.9);
-          
-          // تدرج لوني للبتلة
-          const gradient = ctx.createRadialGradient(
-            -petalWidth*0.2, -petalHeight*0.1, 2,
-            petalWidth*0.3, petalHeight*0.2, petalWidth*0.9
-          );
-          gradient.addColorStop(0, '#ffb0c3');
-          gradient.addColorStop(0.5, '#e8668a');
-          gradient.addColorStop(1, '#b3405f');
-          
-          ctx.beginPath();
-          ctx.ellipse(0, 0, petalWidth, petalHeight, 0, 0, Math.PI*2);
-          ctx.fillStyle = gradient;
-          ctx.globalAlpha = 0.85 + bloom * 0.15;
-          ctx.fill();
-          ctx.strokeStyle = '#a1304f';
-          ctx.lineWidth = 0.8;
-          ctx.stroke();
-          ctx.restore();
-        }
-        
-        // بتلات أمامية (أكثر إشراقاً)
-        for (let i = 0; i < 5; i++) {
-          const angle = (i / 5) * Math.PI * 2 + 0.8;
-          const distance = baseSize * 0.2 * bloom;
-          const offsetX = Math.cos(angle) * distance;
-          const offsetY = Math.sin(angle) * distance * 0.6;
-          
-          const petalWidth = baseSize * (0.5 + bloom * 0.3);
-          const petalHeight = baseSize * (0.7 + bloom * 0.3);
-          
-          ctx.save();
-          ctx.translate(centerX + offsetX, centerY + offsetY - 2);
-          ctx.rotate(angle - 0.1);
-          
-          const grad = ctx.createRadialGradient(-5, -3, 2, 6, 4, petalWidth);
-          grad.addColorStop(0, '#ffd0dc');
-          grad.addColorStop(0.6, '#f2799e');
-          grad.addColorStop(1, '#c94f6e');
-          
-          ctx.beginPath();
-          ctx.ellipse(0, 0, petalWidth, petalHeight, 0, 0, Math.PI*2);
-          ctx.fillStyle = grad;
-          ctx.globalAlpha = 0.9;
-          ctx.fill();
-          ctx.strokeStyle = '#c24967';
-          ctx.lineWidth = 0.9;
-          ctx.stroke();
-          ctx.restore();
-        }
-        
-        // قلب الوردة (مركز متوهج)
-        ctx.shadowBlur = 24;
+        // petal shape (soft rounded)
         ctx.beginPath();
-        ctx.arc(centerX, centerY-2, baseSize*0.2 * (0.5+bloom*0.5), 0, 2*Math.PI);
-        const centerGrad = ctx.createRadialGradient(centerX-2, centerY-4, 1, centerX+2, centerY, baseSize*0.3);
-        centerGrad.addColorStop(0, '#ffe5b4');
-        centerGrad.addColorStop(1, '#d46b7c');
-        ctx.fillStyle = centerGrad;
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(16, -28, 6, -46);
+        ctx.quadraticCurveTo(-10, -30, 0, 0);
+        
+        const petalGrad = ctx.createLinearGradient(-5, -10, 8, -35);
+        petalGrad.addColorStop(0, '#ff8fb4');
+        petalGrad.addColorStop(0.7, '#d94f8a');
+        ctx.fillStyle = petalGrad;
+        ctx.shadowColor = '#ff99bb';
+        ctx.shadowBlur = 16;
         ctx.fill();
-        
-        ctx.shadowColor = 'transparent';
-        ctx.shadowBlur = 0;
+        ctx.strokeStyle = '#b33b6e';
+        ctx.lineWidth = 1.0;
+        ctx.stroke();
+        ctx.restore();
       }
+      
+      // inner petals / bud center (more compact)
+      for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2 + bloom * 1.2;
+        const innerDist = 3 + 10 * bloom;
+        const ix = centerX + Math.cos(angle) * innerDist;
+        const iy = centerY + Math.sin(angle) * innerDist * 0.7 - 3;
+        
+        ctx.save();
+        ctx.translate(ix, iy);
+        ctx.rotate(angle + 0.7);
+        ctx.scale(0.7 + bloom * 0.7, 0.6 + bloom * 0.5);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(10, -18, 4, -28);
+        ctx.quadraticCurveTo(-6, -18, 0, 0);
+        ctx.fillStyle = '#f774a5';
+        ctx.shadowBlur = 14;
+        ctx.fill();
+        ctx.restore();
+      }
+      
+      // center bud (golden/pink)
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.arc(centerX-1, centerY-2, 8 + 4 * bloom, 0, 2*Math.PI);
+      const centerGrad = ctx.createRadialGradient(centerX-3, centerY-5, 2, centerX, centerY, 14);
+      centerGrad.addColorStop(0, '#fdd0e0');
+      centerGrad.addColorStop(1, '#e6739f');
+      ctx.fillStyle = centerGrad;
+      ctx.fill();
+      
+      ctx.restore();
+    }
 
-      // ---------- رسم لمعان / نجوم صغيرة (تأثير ساحر) ----------
-      function drawSparkles(ctx, progress, centerX, centerY, w, h) {
-        const sparkleCount = 5 + Math.floor(progress * 8);
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = '#ffbfd4';
-        for (let i = 0; i < sparkleCount; i++) {
-          const angle = (i * 1.8 + progress * 2) % (Math.PI*2);
-          const radius = w * 0.22 * (0.6 + Math.sin(progress*5 + i)*0.2);
-          const x = centerX + Math.cos(angle) * radius;
-          const y = centerY + Math.sin(angle) * radius * 0.7 - 5;
-          
+    // ----- draw background (soft gradient) -----
+    function drawBackground() {
+      const grad = ctx.createRadialGradient(200, 300, 100, 400, 500, 800);
+      grad.addColorStop(0, '#271a33');
+      grad.addColorStop(0.5, '#1e1428');
+      grad.addColorStop(1, '#0b0812');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, CW, CH);
+      
+      // subtle vignette
+      ctx.save();
+      ctx.globalCompositeOperation = 'overlay';
+      const vignette = ctx.createRadialGradient(300, 400, 150, 300, 400, 500);
+      vignette.addColorStop(0, 'transparent');
+      vignette.addColorStop(1, '#180e1f');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, CW, CH);
+      ctx.restore();
+    }
+
+    // ----- MAIN DRAW (called each frame) -----
+    function drawScene(progress) {
+      // progress clamped 0..1
+      const p = Math.min(progress, 1.0);
+      
+      // clear and draw bg
+      drawBackground();
+      
+      // draw pot (always visible)
+      drawPot();
+      
+      // stem and leaves
+      drawStemAndLeaves(p);
+      
+      // bloom factor: petals start opening around 0.45, fully open at 1.0
+      let bloomFactor = 0;
+      if (p > 0.42) {
+        bloomFactor = Math.min((p - 0.42) / 0.58, 1.0);
+      }
+      // draw rose (with bloom)
+      drawRose(bloomFactor);
+      
+      // particles (hearts, sparkles) on top
+      drawParticles();
+      
+      // extra romantic floating effect: tiny glints
+      if (p > 0.2) {
+        ctx.save();
+        ctx.shadowBlur = 15;
+        for (let i=0; i<3; i++) {
+          const flicker = Math.sin(Date.now()*0.01 + i)*0.5+0.5;
           ctx.beginPath();
-          ctx.arc(x, y, w*0.008 * (0.5+Math.sin(progress*8+i)*0.3), 0, 2*Math.PI);
-          ctx.fillStyle = `rgba(255, 240, 200, ${0.5+Math.sin(progress*6+i)*0.3})`;
+          ctx.arc(480 + i*30, 200 + i*40, 2 + flicker*3, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(255, 220, 240, ${0.2+flicker*0.2})`;
           ctx.fill();
         }
-        ctx.shadowColor = 'transparent';
-      }
-
-      // ---------- دورة الأنيميشن ----------
-      function animationStep(timestamp) {
-        if (!animStartTime) {
-          animStartTime = timestamp;
-        }
-        
-        const elapsed = timestamp - animStartTime;
-        let newProgress = Math.min(elapsed / ANIMATION_DURATION, 1.0);
-        
-        // استخدام دالة تهدئة (ease) لجعل النمو ناعماً
-        // easeInOutCubic
-        if (newProgress < 0.5) {
-          newProgress = 2 * newProgress * newProgress;
-        } else {
-          newProgress = 1 - Math.pow(-2 * newProgress + 2, 2) / 2;
-        }
-        
-        animationProgress = newProgress;
-        drawFullScene(animationProgress);
-        
-        // إظهار الرسالة بعد الاكتمال (99% فأكثر)
-        if (animationProgress >= 0.99 && !animationCompleted) {
-          animationCompleted = true;
-          messageEl.classList.add('show');
-          // بدء توليد القلوب الطائرة بعد التفتح
-          startFloatingHearts();
-        }
-        
-        if (animationProgress < 1.0) {
-          animFrame = requestAnimationFrame(animationStep);
-        } else {
-          // اكتمل الأنيميشن
-          isAnimating = false;
-          animFrame = null;
-          animStartTime = null;
-          // ضمان الرسم النهائي
-          drawFullScene(1.0);
-          if (!animationCompleted) {
-            animationCompleted = true;
-            messageEl.classList.add('show');
-            startFloatingHearts();
-          }
-        }
-      }
-
-      // ---------- بدء الأنيميشن ----------
-      function startAnimation() {
-        // إيقاف أي أنيميشن سابق
-        if (animFrame) {
-          cancelAnimationFrame(animFrame);
-          animFrame = null;
-        }
-        // إخفاء الرسالة مؤقتاً وإعادة ضبط المتغيرات
-        messageEl.classList.remove('show');
-        animationCompleted = false;
-        animationProgress = 0;
-        animStartTime = null;
-        isAnimating = true;
-        
-        // إيقاف القلوب القديمة (إن وجدت)
-        stopHearts();
-        heartsGenerated = false;
-        
-        drawFullScene(0);
-        animFrame = requestAnimationFrame(animationStep);
-      }
-
-      // ---------- نظام القلوب الطائرة (تأثير رومانسي) ----------
-      function startFloatingHearts() {
-        if (heartsGenerated) return;
-        heartsGenerated = true;
-        
-        // تنظيف القلوب القديمة
-        heartsLayer.innerHTML = '';
-        
-        // إنشاء قلب كل 400ms تقريباً
-        heartInterval = setInterval(() => {
-          createHeart();
-        }, 380);
-        
-        // توليد بعض القلوب فوراً
-        for (let i = 0; i < 4; i++) {
-          setTimeout(() => createHeart(), i * 120);
-        }
-        
-        // إيقاف بعد 8 ثواني (حتى لا تتراكم)
-        setTimeout(() => {
-          if (heartInterval) clearInterval(heartInterval);
-          heartInterval = null;
-        }, 7500);
+        ctx.restore();
       }
       
-      function stopHearts() {
-        if (heartInterval) {
-          clearInterval(heartInterval);
-          heartInterval = null;
-        }
-        heartsLayer.innerHTML = '';
+      // show message when bloom completes (progress >= 1.0)
+      if (p >= 0.999 && !bloomCompleted) {
+        bloomCompleted = true;
+        messageEl.classList.add('show');
       }
+    }
+
+    // ----- ANIMATION LOOP (requestAnimationFrame) -----
+    function animationLoop(timestamp) {
+      if (!animStart) animStart = timestamp;
+      const elapsed = timestamp - animStart;
+      let progress = elapsed / ANIM_DURATION;
+      const finished = progress >= 1.0;
+      if (finished) progress = 1.0;
       
-      function createHeart() {
-        const heart = document.createElement('div');
-        heart.className = 'floating-heart';
-        heart.innerHTML = '❤️';
-        
-        const leftPos = 10 + Math.random() * 80; // % من العرض
-        const size = 18 + Math.floor(Math.random() * 22);
-        heart.style.left = leftPos + '%';
-        heart.style.bottom = '5%';
-        heart.style.fontSize = size + 'px';
-        heart.style.animationDuration = (4.2 + Math.random() * 3) + 's';
-        heart.style.opacity = '0';
-        
-        heartsLayer.appendChild(heart);
-        
-        // إزالة العنصر بعد انتهاء الأنيميشن
-        setTimeout(() => {
-          if (heart.parentNode) heart.remove();
-        }, 7000);
-      }
-
-      // ---------- إعادة التشغيل (زر) ----------
-      function replayAnimation() {
-        stopHearts();
-        heartsGenerated = false;
-        startAnimation();
-      }
-
-      // ---------- تهيئة الصفحة والاستجابة ----------
-      function init() {
-        resizeCanvas();
-        // بدء الأنيميشن تلقائياً بعد تحميل الصفحة
-        startAnimation();
-        
-        window.addEventListener('resize', () => {
-          resizeCanvas();
-          // إعادة رسم بالمشهد الحالي (لا نعيد تشغيل الأنيميشن)
-          drawFullScene(animationProgress);
-        });
-        
-        document.getElementById('replayBtn').addEventListener('click', (e) => {
-          e.preventDefault();
-          replayAnimation();
-        });
-      }
-
-      // بدء كل شيء عند تحميل الصفحة
-      window.addEventListener('load', init);
+      // update particle systems every frame
+      updateParticles();
       
-      // في حال حدث تغيير حجم قبل load
-      if (document.readyState === 'complete') {
-        init();
+      // draw everything
+      drawScene(progress);
+      
+      // continue animation if not finished OR we want to keep particles alive
+      if (!finished || particles.length > 0) {
+        animFrame = requestAnimationFrame(animationLoop);
       } else {
-        window.addEventListener('load', init);
+        // if finished and no particles, we can stop, but we still want hearts after bloom?
+        // keep alive a bit longer for romantic effect (continue loop softly)
+        if (particles.length === 0 && finished) {
+          // occasional new sparkle even after bloom
+          if (Math.random() < 0.2) spawnSparkle();
+          animFrame = requestAnimationFrame(animationLoop);
+        } else {
+          animFrame = requestAnimationFrame(animationLoop);
+        }
       }
-    })();
-  </script>
+      
+      // safety: if bloom completed but message not shown (ensure)
+      if (finished && !bloomCompleted) {
+        bloomCompleted = true;
+        messageEl.classList.add('show');
+      }
+    }
+
+    // ----- start everything on page load -----
+    function startRomanticBloom() {
+      // initial spawn of some particles
+      for (let i=0; i<6; i++) { spawnHeart(); spawnSparkle(); }
+      animFrame = requestAnimationFrame(animationLoop);
+    }
+
+    // handle page visibility (optional: not needed but good)
+    window.addEventListener('load', startRomanticBloom);
+    
+    // cleanup potential animation frame on page unload (good practice)
+    window.addEventListener('beforeunload', () => {
+      if (animFrame) cancelAnimationFrame(animFrame);
+    });
+
+    // resize does not affect canvas logical size, but CSS keeps it responsive
+  })();
+</script>
 </body>
 </html>
