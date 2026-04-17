@@ -1,1 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Zen Relax · Anti-stress Game</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<div class="app-wrapper">
+  <!-- Fond animé géré par CSS + canvas en arrière-plan -->
+  <canvas id="gameCanvas"></canvas>
+
+  <!-- Interface Glassmorphism -->
+  <div class="ui-overlay">
+    <!-- Barre supérieure -->
+    <div class="top-bar glass">
+      <div class="stats-group">
+        <div class="stat-item">
+          <span class="stat-label">😌 Relax</span>
+          <span class="stat-value" id="relaxPointsDisplay">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">🧘 Niveau</span>
+          <span class="stat-value" id="relaxLevelDisplay">1</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">⏱️ Session</span>
+          <span class="stat-value" id="timerDisplay">00:00</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">💧 Pops</span>
+          <span class="stat-value" id="popsCountDisplay">0</span>
+        </div>
+      </div>
+      <div class="action-icons">
+        <button id="soundToggleBtn" class="icon-btn glass" aria-label="Son">🔊</button>
+        <button id="fullscreenBtn" class="icon-btn glass" aria-label="Plein écran">⛶</button>
+        <button id="themeBtn" class="icon-btn glass" aria-label="Thème">🎨</button>
+        <button id="menuBtn" class="icon-btn glass" aria-label="Menu">☰</button>
+      </div>
+    </div>
+
+    <!-- Message positif (apparaît en pop) -->
+    <div id="positiveMessage" class="positive-message glass">🌿 Respire...</div>
+
+    <!-- Menu principal (overlay) -->
+    <div id="mainMenu" class="menu-panel glass">
+      <h2 class="menu-title">✨ Zen Relax</h2>
+      <div class="mode-grid">
+        <button class="mode-btn glass" data-mode="bubble">🫧 Bubble Pop</button>
+        <button class="mode-btn glass" data-mode="glow">🌟 Glow Touch</button>
+        <button class="mode-btn glass" data-mode="draw">🎨 Drawing</button>
+        <button class="mode-btn glass" data-mode="breathe">🌬️ Breathing</button>
+      </div>
+      <div class="menu-footer">
+        <button id="howToPlayBtn" class="text-btn">🧘 Comment jouer</button>
+        <button id="resetStatsBtn" class="text-btn">🔄 Reset</button>
+      </div>
+      <p class="menu-hint">Appuie sur une carte pour commencer</p>
+    </div>
+
+    <!-- Panneau d'instructions -->
+    <div id="instructionsPanel" class="info-panel glass hidden">
+      <h3>🌸 Guide zen</h3>
+      <ul>
+        <li><strong>Bubble Pop :</strong> Éclate les bulles pour libérer le stress.</li>
+        <li><strong>Glow Touch :</strong> Touche les orbes lumineuses.</li>
+        <li><strong>Drawing :</strong> Dessine des lignes apaisantes.</li>
+        <li><strong>Breathing :</strong> Suis le rythme de respiration.</li>
+      </ul>
+      <p>Chaque interaction augmente tes points Relax. Active le son pour une immersion totale.</p>
+      <button id="closeInstructionsBtn" class="glass" style="margin-top:1rem;">Fermer</button>
+    </div>
+
+    <!-- Indicateur de respiration (mode breathing) -->
+    <div id="breathingGuide" class="breathing-guide glass hidden">
+      <div class="breath-circle" id="breathCircle"></div>
+      <div class="breath-text" id="breathText">Inspire</div>
+      <div class="breath-timer" id="breathTimer">4s</div>
+    </div>
+
+    <!-- Bouton Reset / retour menu rapide (visible selon mode) -->
+    <button id="backToMenuFAB" class="fab glass hidden">☰ Menu</button>
+  </div>
+</div>
+
+<script src="main.js" type="module"></script>
+</body>
+</html>
